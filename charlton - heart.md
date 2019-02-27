@@ -54,15 +54,21 @@ To fulfill this requirement the software platform will need to be extensible: ba
 
 # Initial experiments
 
-Based on the requirements laid out above, some initial experiments were carried out to assess various approaches before committing to a technology stack.
+The Javascript code library ecosystem is extremely large. Thousands of libraries and packages are available on a common centralized Javascript repository known as "NPM" [x], and there are often multiple packages that do similar things. As a developer, one must assess and select from these packages or choose to solve a problem by writing code by hand. Of course these packages are of varying levels of popularity and quality.
 
-The Javascript code library ecosystem is extremely large. Thousands of libraries and packages available on a centralized repository, often multiple
+Based on the requirements laid out above, some initial experiments were carried out to assess various approaches before committing to a technology stack.
 
 ## Visualizing time-dependent data on a geographic map
 
-Two popular web-based Javascript libraries were tested for displaying geographic data; Leaflet [x] and Mapbox GL [2].
+Two popular web-based Javascript libraries were tested for displaying geographic data; Leaflet [x] and Mapbox GL [2]. A simple test case comprised of MATSim simulation outputs was developed, with the goal of displaying aggregated roadway link volumes by time of day.
 
-Leaflet
+Leaflet was explored first as it is more popular and its application programming interface (API) is a bit simpler. Leaflet uses background map "tiles" at specific zoom levels, and layers data on top of those base maps. With small networks [x] COTTBUS - NUMBER OF LINKS Leaflet performed well, but medium-sized and large-sized networks with many elements on the page at once suffered from performance degradation. This was problematic as this was the simplest use-case envisioned.
+
+Mapbox GL fared much better, apparently better-suited to displaying larger datasets with many visible features simultaneously. In addition, Mapbox GL's use of 3D vector graphic mapping instead of preset tiles made for a much more pleasing user experience, with smooth animations between zoom levels and better background processing during page loads. For these reasons Mapbox GL was chosen as the base map for the remaining geographic visualizations.
+
+## Dealing with large datasets
+
+MATSim network files are generally small enough to fit in RAM, but plan files and event files can be much larger than RAM, necessitating careful thinking about how to handle them.
 
 # Architecture
 
