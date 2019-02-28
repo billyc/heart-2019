@@ -1,6 +1,14 @@
-# Building an open, web-based data visualization platform for MATSim
+---
+title: Building an open, web-based data visualization platform for MATSim
+author: Billy Charlton
+institute: |
+  Department of Transport Systems Planning and Telematics
+  Technische Universität Berlin
+  Berlin, Germany
+abstract: MATSim is an open-source framework for implementing large-scale agent-based transport simulations. [x] There are many tools available for analyzing results, both open-source and commercial, and MATSim is widely used for transportation research in academic settings.
+---
 
-# 0. Abstract
+---
 
 # 1. Introduction
 
@@ -9,6 +17,8 @@ MATSim is an open-source framework for implementing large-scale agent-based tran
 # 2. Motivation
 
 A notable gap in those tools, however, is in web-based visualization. As more and more public discourse occurs online, this creates a challenge for using MATSim in public policy settings: the only people who can meaningfully examine and explore results are those with extensive technical knowledge and access to the specialized software and large datasets involved.
+
+# 3. Related work
 
 ## Hypothesis: Web-based platform is now advanced enough to visualize large-scale simulation results without proprietary software, plugins, etc
 
@@ -22,9 +32,10 @@ Given the above-stated motivation and hypothesis that the modern web platform is
 
 Several specific web technologies developed and made widely available in recent years enable us to perform this research: HTML 5, CSS 3, WebGL, ECMA Script 6, and Web Workers. This paper will not attempt to fully describe these technologies, as our focus is on using them for the task of data visualization, but the brief descriptions below may be helpful:
 
-- **HTML 5** improves and, critically, standardizes the "document model" of what constitutes a web page and how it is specified.
+- **HTML 5** improves and standardizes the "document model" of what constitutes a web page and how it is specified.
 - **CSS 3** is a styling language that enables fine-grained styling of individual elements on a page. CSS 3 defines in a consistent, standard way the details of things such as color, size, layout, and animation of page elements.
 - **WebGL** provides browser support for the 3D-accelerated graphics capabilities of modern machines.
+
 - **ECMAScript 6** is an updated version of the Javascript scripting language that has been part of the web platform since the early 1990's. More recent versions of Javascript eliminate the more problematic aspects of Javascript and make it easier for developers to create bug-free, efficient code.
 - **Web Workers** are a recent addition to the web platform that allow background thread processing for long-running tasks. Before Web Workers, there was no way to run truly multi-threaded code inside a browser.
 
@@ -38,11 +49,11 @@ The entire project, including all front-end (browser) and back-end (server) must
 
 No proprietary or closed licensing schemes were considered, because excellent proprietary visualization packages for MATSim already exist. Creating a competing product would be duplicative and unnecessary, and would not further the research goal of determining whether web-based technology is now advanced enough to work with MATSim outputs. The goal of this research is not to replace existing, closed, proprietary solutions, but rather to complement them.
 
-The software developed as part of this research is licensed entirely with the GNU General Public License v3, commonly known as the "GPL" [x]. This matches the license of MATSim itself. Several other open-source licenses were considered, including the MIT License and the Apache Public License, but the benefit of sharing a common license with MATSim outweighs any perceived benefits of switching to other open licenses.
+The software developed as part of this research is licensed entirely with the GNU General Public License v3, commonly known as the "GPL" [x]. zThis matches the license of MATSim itself. Several other open-source licenses were considered, including the MIT License and the Apache Public License, but the benefit of sharing a common license with MATSim outweighs any perceived benefits of switching to other open licenses.
 
-## Requirement 3: Good defaults, minimal configuration, and opinionated
+## Requirement 3: Use good defaults, with minimal configuration, and be opinionated
 
-Since its inception, the web platform has had a relentless focus on simplicity and smooth user onboarding. Users are accustomed to being immediately familiar with a site -- within seconds of their first interaction [x]. Because of this expectation, it is critical that this research follow current best practices for user interface (UI) and user experience (UX). Specifically, that means using familiar UI paradigms such as navigation bars and modal dialogs, separating configuration from usage, limiting settings and options to the bare minimum, and being opinionated about the way to accomplish a task.
+Since its inception, the web platform has had a relentless focus on simplicity and smooth user onboarding. Users are accustomed to being immediately familiar with a site -- within seconds of their first interaction [x]. Because of this expectation, it is critical that this research follow current best practices for user interface (UI) and user experience (UX). Specifically, that means using familiar UI paradigms such as navigation bars and modal dialogs, separating configuration from usage, limiting settings and options to the bare minimum, and being opinionated about the correct way to accomplish a task.
 
 This approach is dissimilar to some data exploration tools (e.g., QGis and Via) where extreme configurability is emphasized. Rather than providing endless options for things such as scales and color ramps, our research focuses on choosing good defaults and determining whether that is sufficient for the software to be useful.
 
@@ -66,9 +77,19 @@ Leaflet was explored first as it is more popular and its application programming
 
 Mapbox GL fared much better, apparently better-suited to displaying larger datasets with many visible features simultaneously. In addition, Mapbox GL's use of 3D vector graphic mapping instead of preset tiles made for a much more pleasing user experience, with smooth animations between zoom levels and better background processing during page loads. For these reasons Mapbox GL was chosen as the base map for the remaining geographic visualizations.
 
+## Visualizing non-geographic data
+
+There are literally dozens of data visualization libraries available for the web which provide ways to produce charts and plots of varying complexity. Our requirement of using open-source code narrowed the field considerably.
+
+After experimenting with several packages including D3, Raphael, Morris and others, the package Vega-Lite (Satyanarayan, 2016) exhibited many of the characteristics desired. Notably, Vega-lite follows a "grammar of graphics" as popularized by Wilkinson (2005), and this grammar allows concise description of the meaningful components of a graphic.
+
 ## Dealing with large datasets
 
-MATSim network files are generally small enough to fit in RAM, but plan files and event files can be much larger than RAM, necessitating careful thinking about how to handle them.
+MATSim network files are often small enough to fit in RAM, but MATSim plan files and event files can be much larger than RAM, necessitating careful thinking about how to handle them.
+
+Modern browsers allow access via API to a hidden data storage area that is unique per hostname, i.e. http://mysite.com is allowed some storage on the local machine. Each browser vendor implements this differently, with strict limits on the absolute amount of data as well as by percentage of free space on the user's machine. It quickly became apparent that this local browser-based storage would not be sufficient for MATSim outputs. A client-server paradigm emerges as a viable alternative, and indeed this is how most websites operate: the browser is just the front-end to the heavier processing and storage tasks that happen on someone else's server.
+
+A companion paper from J. Laudan is being submitted simultaneously, which describes the server component developed for handling large MATSim outputs. The front-end developed for this research uses the same back end server.
 
 # Architecture
 
@@ -82,5 +103,12 @@ MATSim network files are generally small enough to fit in RAM, but plan files an
 
 # 9. References
 
-[1] MATSim main reference
-[2]
+Horni, A., Nagel, K. and Axhausen, K.W. (eds.) 2016 The Multi-Agent Transport Simulation MATSim. London: Ubiquity Press. DOI: http://dx.doi.org/10.5334/baw. License: CC-BY 4.0
+
+Rieser, Marcel (2016): Senozon Via. In Andreas Horni, Kai Nagel, Kay W. Axhausen (Eds.): The Multi-Agent Transport Simulation MATSim: Ubiquity Press, pp. 219–224.
+
+Satyanarayan, A., Moritz, D., Wongsuphasawat, K., and Heer, J. (2016): Vega-Lite: A Grammar of Interactive Graphics. IEEE Transactions on Visualization and Computer Graphics, Volume 23, Issue 1. DOI: https://doi.org/10.1109/TVCG.2016.2599030
+
+Strippgen, David (2016): OTFVis: MATSim’s Open-Source Visualizer. In Andreas Horni, Kai Nagel, Kay W. Axhausen (Eds.): The Multi-Agent Transport Simulation MATSim: Ubiquity Press, pp. 225–234.
+
+Wilkinson, Leland (2005): The Grammar of Graphics, Second Edition. Springer Press, Chicago, USA. DOI: https://doi.org/10.1007/0-387-28695-0
