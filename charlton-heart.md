@@ -67,7 +67,7 @@ Every data visualization use case is different; there is no way to anticipate ho
 
 To fulfill this requirement the software platform will need to be extensible: basic capabilities and templates will be provided, but a user with some level of coding skill should be able to create new visualizations that are not anticipated by the researchers.
 
-# Initial experiments
+# 4. Initial experiments
 
 It is no exaggeration to state that the Javascript code library ecosystem is extremely, enormously large. Thousands of libraries and packages are available on a common centralized Javascript repository known as "NPM", and there are often multiple packages that do similar things. As a developer, one must assess and select from these packages or choose to solve a problem by writing code by hand. Of course these libraries are of varying levels of popularity and quality.
 
@@ -95,7 +95,7 @@ Modern browsers allow access via API to a data storage area that is unique per h
 
 A companion paper from J. Laudan (citation pending) is being submitted simultaneously, that describes the server component developed for handling large MATSim outputs. The front-end developed for this research uses the same back-end server as described in that paper.
 
-# Platform architecture
+# 5. Platform architecture
 
 The client/server architecture depends on a set of back-end services for user authentication and file storage. Those back-end services are not described in this paper; suffice it to mention that the front-end communicates with them to establish what resources a user has access to, and provides an API with which to query and fetch those files and resources.
 
@@ -119,7 +119,7 @@ The Vue component architecture enables this. To create a new visualization, a de
 
 This currently requires ample coding skill in Javascript; it is not a system that is point-and-click like an online data exploration tool.
 
-# Results: the current state of the tool
+# 6. Results: the current state of the tool
 
 A working instance of the platform is now online and available at https://viz.vsp.tu-berlin.de. Sample datasets are uploaded, and pre-built visualizations are publicly accessible, as a demonstration of the platform's current state. There is also a user login system so that researchers can extend and experiment with the system without exposing data or partially completed work to the public.
 
@@ -149,7 +149,7 @@ Various levels of aggregation make MATsim data much easier to visualize, as is r
 
 Based on this, further work needs to be done to leverage the back-end server capabilities we now have available.
 
-# Conclusions and outlook
+# 7. Conclusions and outlook
 
 Experimenting with the various technologies and getting all of the disparate pieces working together was an enormous task, one which took much longer than anticipated. However, those decisions are now behind us and the platform has become quite stable.
 
@@ -163,7 +163,7 @@ Despite these concerns, the MATSim visualization framework is operational and is
 
 All code is available on the MATSim Github site, at https://github.com/matsim-org/viz.
 
-# 9. References
+# References
 
 GNU General Public License (June 29, 2007). Version 3. Free Software Foundation. URL: https://www.gnu.org/licenses/gpl.html
 
