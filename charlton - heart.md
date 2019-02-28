@@ -5,22 +5,28 @@ institute: |
   Department of Transport Systems Planning and Telematics
   Technische Universität Berlin
   Berlin, Germany
-abstract: MATSim is an open-source framework for implementing large-scale agent-based transport simulations. [x] There are many tools available for analyzing results, both open-source and commercial, and MATSim is widely used for transportation research in academic settings.
+abstract: teehee -- Add abstract here.
 ---
 
 ---
 
 # 1. Introduction
 
-MATSim is an open-source framework for implementing large-scale agent-based transport simulations. [x] There are many tools available for analyzing results, both open-source and commercial, and MATSim is widely used for transportation research in academic settings.
+MATSim is an open-source framework for implementing large-scale agent-based transport simulations (Horni, et. al, 2016). MATSim is widely used for transportation research in academic settings, and is gaining momentum as a tool ready for practice in real-world planning contexts.
+
+There are many tools available for analyzing MATSim results, both open-source and commercial. Typically, analysts can choose either the free tool OTFVis (Strippgen, 2016) or the commercial software Via (Rieser, 2016), both of which are desktop software packages requiring installation as well as a fair amount of technical acumen to operate. Alternatives to these tools include the more general-purpose desktop mapping software packages such as QGis or ArcGIS, again both of which require installation and expertise to use, or statistical software packages.
+
+As MATSim moves from the confines of academic research to a more public-facing role, a notable gap is apparent: there are no web-based, interactive tools available for disseminating MATSim results. This creates a challenge for using MATSim in public policy settings: the only people who can meaningfully examine and explore results are those who have extensive technical knowledge and access to the specialized software and large datasets involved.
+
+This research explores one way to fill this gap: building an open web-based visualization platform which is specifically designed to complement MATSim.
 
 # 2. Motivation
 
-A notable gap in those tools, however, is in web-based visualization. As more and more public discourse occurs online, this creates a challenge for using MATSim in public policy settings: the only people who can meaningfully examine and explore results are those with extensive technical knowledge and access to the specialized software and large datasets involved.
+The rapid advancement of Internet browsing technologies in the last five years has enabled the web browser to do things much more "application"-like than ever before: background processing, three-dimensional rendering using GPU acceleration, offline support, and more. The combination of these technologies and their standard implementations on every popular hardware type and operating system now makes the web a very compelling platform.
 
-# 3. Related work
+For MATSim research, the question is: could a web browser really be useful for exploring and delivering results when the datasets are so large? Answering this question is the primary motivation for this research. Essentially, has the web become powerful enough for MATSim?
 
-## Hypothesis: Web-based platform is now advanced enough to visualize large-scale simulation results without proprietary software, plugins, etc
+Currently, analysis of MATSim outputs ends up in research reports, PDF's, screen-recordings, and presentations. An online dashboard of results, which a user could explore and manipulate, would not only be more interactive but might also reveal findings that the original analysts hadn't anticipated.
 
 # 3. Requirements
 
