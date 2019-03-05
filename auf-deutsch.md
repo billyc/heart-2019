@@ -1,145 +1,177 @@
 ---
-title: Eine webbasierte Plattform zur Datenvisualisierung für MATSim
+title: A web-based data visualization platform for MATSim
 author: \textbf{William Charlton}, Technische Universität Berlin, Germany
+abstract: There are many tools available for analyzing MATSim results, both open-source and commercial. This research builds a new visualization platform for MATSim outputs that is entirely web-based. After initial experiments with many different web technologies, a client/server platform design emerges which leverages advanced user interface capabilities of modern browsers on the front-end, and relies on back-end server processing for more CPU-intensive tasks. The initial platform is now operational and includes several aggregate-level visualizations including origin/destination flows, transit supply, and emissions levels; as well as one fully disaggregate traffic visualization. These visualizations are general enough to be useful for various projects. Further work is needed to make the visualizations more compelling and the platform more useful for practitioners.
 ---
 
 ---
 
-# 1. Einleitung
+# 1. Introduction
 
-MATSim ist ein Open-Source-Framework für die Implementierung großer, agentenbasierter Transportsimulationen. MATSim wird häufig in der Transportforschung in akademischen Umgebungen eingesetzt und gewinnt als praktisches Werkzeug in der Praxis in der Praxis an Bedeutung.
+MATSim is an open-source framework for implementing large-scale agent-based transport simulations (Horni, et. al, 2016). MATSim is widely used for transportation research in academic settings, and is gaining momentum as a tool ready for practice in real-world planning contexts.
 
-Da sich MATSim von den Grenzen der akademischen Forschung hin zu einer eher öffentlichen Rolle bewegt, besteht eine bemerkenswerte Lücke: Es gibt keine webbasierten, interaktiven Tools zur Verbreitung von MATSim-Ergebnissen. Dies stellt eine Herausforderung für die Verwendung von MATSim in öffentlichen Richtlinieneinstellungen dar. Die einzigen Personen, die die Ergebnisse sinnvoll untersuchen und untersuchen können, sind diejenigen, die über umfassende technische Kenntnisse und Zugriff auf die betreffende spezialisierte Software und umfangreiche Datensätze verfügen.
+There are many tools available for analyzing MATSim results, both open-source and commercial. Typically, analysts can choose either the free tool OTFVis (Strippgen, 2016) or the commercial software Via (Rieser, 2016), both of which are desktop software packages requiring installation as well as a fair amount of technical acumen to operate. Alternatives to these tools include the more general-purpose desktop mapping software packages such as QGis or ArcGIS, again both of which require installation and expertise to use, or statistical software packages.
 
-Diese Forschung untersucht einen Weg, um diese Lücke zu schließen: den Aufbau einer offenen webbasierten Visualisierungsplattform, die speziell zur Ergänzung von MATSim entwickelt wurde.
+As MATSim moves from the confines of academic research to a more public-facing role, a notable gap is apparent: there are no web-based, interactive tools available for disseminating MATSim results. This creates a challenge for using MATSim in public policy settings: the only people who can meaningfully examine and explore results are those who have extensive technical knowledge and access to the specialized software and large datasets involved.
+
+This research explores one way to fill this gap: building an open web-based visualization platform which is specifically designed to complement MATSim.
 
 # 2. Motivation
 
-Die rasante Weiterentwicklung der Internet-Browsing-Technologien in den letzten fünf Jahren hat es dem Webbrowser ermöglicht, mehr als je zuvor "Anwendungen" zu erledigen: Hintergrundverarbeitung, dreidimensionales Rendering mit GPU-Beschleunigung, Offline-Unterstützung und vieles mehr. Die Kombination dieser Technologien und ihrer Standardimplementierungen auf jedem gängigen Hardwaretyp und Betriebssystem macht das Web jetzt zu einer sehr überzeugenden Plattform.
+The rapid advancement of Internet browsing technologies in the last five years has enabled the web browser to do things much more "application"-like than ever before: background processing, three-dimensional rendering using GPU acceleration, offline support, and more. The combination of these technologies and their standard implementations on every popular hardware type and operating system now makes the web a very compelling platform.
 
-Für die MATSim-Forschung lautet die Frage: Kann ein Webbrowser wirklich nützlich sein, um Ergebnisse zu ermitteln und Ergebnisse zu liefern, wenn die Datensätze so groß sind? Die Beantwortung dieser Frage ist die Hauptmotivation für diese Forschung. Wesentlich
+For MATSim research, the question is: could a web browser really be useful for exploring and delivering results when the datasets are so large? Answering this question is the primary motivation for this research. Essentially, has the web become powerful enough for MATSim?
 
-Derzeit führt die Analyse der MATSim-Ergebnisse zu Forschungsberichten, PDFs, Bildschirmaufzeichnungen und Präsentationen. Ein Online-Dashboard mit Ergebnissen, das ein Benutzer untersuchen und manipulieren könnte, wäre nicht nur interaktiver, sondern könnte auch Ergebnisse enthüllen, die die ursprünglichen Analysten nicht erwartet hatten.
+Currently, analysis of MATSim outputs ends up in research reports, PDF's, screen-recordings, and presentations. An online dashboard of results, which a user could explore and manipulate, would not only be more interactive but might also reveal findings that the original analysts hadn't anticipated.
 
-# 3. Anforderungen
+# 3. Requirements
 
-Das Forschungsteam der TU Berlin hat mehrere Diskussionen geführt, bevor überhaupt Code geschrieben wurde: Das heißt, wenn wir ganz am Anfang beginnen und etwas komplett Web-basiertes und offenes Design entwerfen könnten, was wären die Mindestvoraussetzungen dafür wirklich nützlich? Die folgenden Anforderungen ergaben sich aus diesen Diskussionen.
+The research team at TU Berlin had several "blank slate" discussions before any code was written: meaning, if we could start at the very beginning and design something completely web-based and open, what would the bare minimum requirements be for it to be truly useful? The following requirements emerged from those discussions.
 
-## Anforderung 1: Webbrowser-basiert
+## Requirement 1: Web browser-based
 
-Angesichts der oben genannten Motivation und der Hypothese, dass die moderne Webplattform für umfangreiche Visualisierungsaufgaben bereit ist, besteht die naheliegendste Anforderung darin, dass das Produkt dieser Untersuchung mit jedem modernen Webbrowser zusammenarbeiten muss.
+Given the above-stated motivation and hypothesis that the modern web platform is ready for large-scale visualization tasks, the most obvious requirement is that the product of this research must work with any modern web browser.
 
-Verschiedene spezifische Web-Technologien, die in den letzten Jahren entwickelt und verfügbar gemacht wurden, ermöglichen uns die Durchführung dieser Forschung: HTML 5, CSS 3, WebGL, ECMA Script 6 und Web Workers. In Kürze sind diese Technologien:
+Several specific web technologies developed and made widely available in recent years enable us to perform this research: HTML 5, CSS 3, WebGL, ECMA Script 6, and Web Workers. Briefly, these technologies are:
 
-Eine Komplikation bei der Webentwicklung ist, dass die großen Webbrowser-Anbieter diese Technologien zu ihren eigenen Zeitplänen implementieren, manche viel schneller als andere. Komplizierter wird die Tatsache, dass Endbenutzer ihren Browser nicht häufig (oder überhaupt) aktualisieren. Dadurch entsteht eine Landschaft, in der es eine Technologie-Annahmekurve mit einem sehr langen Schwanz gibt. Entwickler jeder Website müssen eine bewusste Entscheidung darüber treffen, wo sie die Linie ziehen und die für ihre Website erforderlichen Technologien auswählen müssen, um zu wissen, dass einige Benutzer mit älteren Browsern entweder keine optimale Erfahrung haben oder überhaupt keinen Zugriff auf die Website haben .
+- **HTML 5** improves and standardizes the "document model" of what constitutes a web page and how it is specified.
+- **CSS 3** is a styling language that enables fine-grained styling of individual elements on a page. CSS 3 defines in a consistent, standard way the details of things such as color, size, layout, and animation of page elements.
+- **WebGL** provides browser support for the 3D-accelerated graphics capabilities of modern machines.
+- **ECMAScript 6** is an updated version of the Javascript scripting language that has been part of the web platform since the early 1990's. Recent versions of Javascript eliminate the more problematic aspects of the language and make it easier for developers to create bug-free, efficient code.
+- **Web Workers** are a recent addition to the web platform that allow background thread processing for long-running tasks. Before Web Workers, there was no way to run truly multi-threaded code inside a browser.
 
-Für diese Forschung erforschen wir bewusst die neuesten \_Standard-Web-Technologien, mit der Erwartung, dass der Zugang zu diesen Technologien in Zukunft immer häufiger wird. Daher zielen wir ab 2019 auf die neuesten Versionen moderner Webbrowser ab, darunter Google Chrome, Mozilla Firefox und Apple Safari. Alle drei Browser unterstützen die oben aufgeführten Technologien vollständig und, was wichtig ist, alle drei automatischen Updates werden automatisch durchgeführt, um sicherzustellen, dass die meisten Benutzer dieser Browser auf dem neuesten Stand bleiben, wenn sich diese Technologien weiterentwickeln.
+A complication in web development is that the major web browser vendors implement these technologies on their own timelines, some much more rapidly than others. Further complicating things is the reality that end users do not always upgrade their browsers frequently (or at all). This creates a landscape where there is a technology adoption curve with a very long tail. Developers of every web site need to make a conscious decision about where to draw the line choosing necessary technologies for their site to operate correctly, knowing that some users with older browsers will either have a sub-optimal experience or no access to the site at all.
 
-## Anforderung 2: Open Source
+For this research, we are deliberately exploring the latest _standard_ web technologies, with the expectation that access to these technologies will become more and more common in the future. Thus, we are targeting the most recent versions of modern web browsers as of 2019, including Google Chrome, Mozilla Firefox, and Apple Safari. All three browsers fully support the above-listed technologies, and importantly, all three auto-update automatically, ensuring that most users of those browsers stay current as these technologies evolve.
 
-Das gesamte Projekt, einschließlich des gesamten Front-End (Browser) und Back-End (Server), muss vollständig Open Source sein. Die im Rahmen dieser Forschung entwickelte Software ist vollständig mit der GNU General Public License v3, allgemein als "GPL" (Free Software Foundation, 2007) bekannt, lizenziert. Dies entspricht der Lizenz von MATSim selbst. Einige andere Open-Source-Lizenzen wurden in Betracht gezogen, darunter die MIT-Lizenz und die Apache Public License. Der Vorteil, eine gemeinsame Lizenz mit MATSim zu teilen, wiegt jedoch alle möglichen Vorteile eines Wechsels zu anderen offenen Lizenzen auf.
+## Requirement 2: Open source
 
-## Anforderung 3: Verwenden Sie gute Standardeinstellungen mit minimaler Konfiguration und lassen Sie sich einschätzen
+The entire project, including all front-end (browser) and back-end (server) must be fully open-source.
 
-Seit ihrer Gründung hat sich die Webplattform unnachgiebig auf Einfachheit und reibungslose Benutzerentwicklung konzentriert. Benutzer sind es gewohnt, sich mit einer Site sofort vertraut zu machen - oft innerhalb von Sekunden nach ihrer ersten Interaktion. Aufgrund dieser Erwartung ist es wichtig, dass diese Forschung den aktuellen Best Practices für Benutzeroberfläche (UI) und User Experience (UX) folgt. Konkret bedeutet dies, dass Sie bekannte UI-Paradigmen wie na verwenden
+No proprietary or closed licensing schemes were considered, because excellent proprietary visualization packages for MATSim already exist. Creating a competing product would be duplicative and unnecessary, and would not further the research goal of determining whether web-based technology is now advanced enough to work with MATSim outputs. The goal of this research is not to replace existing, proprietary solutions, but rather to complement them.
 
-How satisfied are you with Google Translate today?
-Very satisfiedSomewhat satisfiedNeither satisfied nor dissatisfiedSomewhat dissatisfiedVery dissatisfied
-5000/5000
-Character limit: 5000
-Bewährungsbarrieren und Breadcrumbs, Trennen der Konfiguration von der Verwendung, Beschränken der Einstellungen und Optionen auf das Nötigste und "Meinungsbildung", d. h. Anregen für einen korrekten Weg, eine Aufgabe auszuführen.
+The software developed as part of this research is licensed entirely with the GNU General Public License v3, commonly known as the "GPL" (Free Software Foundation, 2007).
 
-## Anforderung 4: Eine erweiterbare Plattform
+This matches the license of MATSim itself. Several other open-source licenses were considered, including the MIT License and the Apache Public License, but the benefit of sharing a common license with MATSim outweighs any perceived benefits of switching to other open licenses.
 
-Jeder Anwendungsfall der Datenvisualisierung ist anders. Es gibt keine Möglichkeit vorherzusehen, wie das Werkzeug verwendet wird. Wenn die Plattform zu allgemein ist, ist sie überhaupt nicht nützlich. Wenn dagegen nur fest codierte Visualisierungen für bestimmte Projekte erstellt werden, werden sie auf "Demo-Ware" gesetzt, was bedeutet, dass es sich um eine erfolgreiche Technologiedemonstration handelt, die jedoch für echte Benutzer nicht wirklich nützlich ist.
+## Requirement 3: Use good defaults, with minimal configuration, and be opinionated
 
-Um diese Anforderung zu erfüllen, muss die Softwareplattform erweiterbar sein: Es werden grundlegende Funktionen und Vorlagen bereitgestellt, ein Benutzer mit einem gewissen Grad an Codierkenntnissen sollte jedoch in der Lage sein, neue Visualisierungen zu erstellen, die von den Forschern nicht erwartet werden.
+Since its inception, the web platform has had a relentless focus on simplicity and smooth user onboarding. Users are accustomed to being immediately familiar with a site -- often within seconds of their first interaction. Because of this expectation, it is critical that this research follow current best practices for user interface (UI) and user experience (UX). Specifically, that means using familiar UI paradigms such as navigation bars and breadcrumbs, separating configuration from usage, limiting settings and options to the bare minimum, and being "opinionated", i.e. encouraging a correct way to accomplish a task.
 
-# 4. Erste Versuche
+This approach is dissimilar to some data exploration tools (e.g., QGis and Via) where extreme configurability is emphasized. Rather than providing endless options for things such as scales and color ramps, our research focuses on choosing good defaults and determining whether that is sufficient for the software to be useful.
 
-In einigen ersten Versuchen wurden verschiedene Ansätze untersucht, bevor sie sich einem Technologie-Stack zuwenden.
+## Requirement 4: An extensible platform
 
-## Visualisierung zeitabhängiger Daten auf einer geografischen Karte
+Every data visualization use case is different; there is no way to anticipate how the tool will be used. If the platform is too generic, it will be not at all useful. Conversely if only hard-coded visualizations are created for specific projects, it will be relegated to "demo-ware", meaning it is a successful technology demonstration but not actually useful for real users.
 
-Zwei beliebte webbasierte Javascript-Bibliotheken wurden zur Anzeige geografischer Daten getestet. Prospekt und Mapbox GL. Es wurde ein einfacher Testfall mit MATSim-Simulationsausgaben entwickelt, mit dem Ziel, das aggregierte Straßenverbindungsvolumen nach Tageszeit anzuzeigen.
+To fulfill this requirement the software platform will need to be extensible: basic capabilities and templates will be provided, but a user with some level of coding skill should be able to create new visualizations that are not anticipated by the researchers.
 
-Mapbox GL entwickelte sich deutlich besser als Leaflet. Die Verwendung von 3D-Vektorgrafiken-Mappings anstelle von voreingestellten Kacheln wurde durch Mapbox GL für ein viel angenehmeres Benutzererlebnis mit glatten Animationen zwischen den Zoomstufen und einer besseren Hintergrundverarbeitung während des Ladens der Seite geschaffen. Aus diesen Gründen wurde Mapbox GL als Basiskarte für die verbleibenden geografischen Visualisierungen ausgewählt.
+# 4. Initial experiments
 
-## Visualisierung nicht geografischer Daten
+It is no exaggeration to state that the Javascript code library ecosystem is extremely, enormously large. Thousands of libraries and packages are available on a common centralized Javascript repository known as "NPM", and there are often multiple packages that do similar things. As a developer, one must assess and select from these packages or choose to solve a problem by writing code by hand. Of course these libraries are of varying levels of popularity and quality.
 
-Nach dem Experimentieren mit mehreren Open-Source-Paketen, darunter D3, Raphael, Morris und anderen, zeigte das Paket Vega-Lite (Satyanarayan, 2016) viele der gewünschten Eigenschaften. Vega-lite folgt einer deklarativen Syntax "Grammatik der Grafiken", wie sie von Wilkinson (2005) popularisiert wird, und diese Grammatik ermöglicht eine kurze Beschreibung der bedeutungsvollen Komponenten einer Grafik.
+Based on the requirements laid out above, some initial experiments were carried out to assess various approaches before committing to a technology stack.
 
-## Umgang mit großen Datensätzen
+## Visualizing time-dependent data on a geographic map
 
-MATSim-Netzwerkdateien sind normalerweise klein genug, um in den RAM-Speicher zu passen. MATSim-Planungsdateien und Ereignisdateien können jedoch viel größer als der RAM-Speicher sein, so dass eine sorgfältige Überlegung erforderlich ist. Es stellte sich schnell heraus, dass diese lokale browserbasierte Zwischenspeicherung und Speicherung für MATSim-Ausgaben nicht ausreicht. Ein Client-Server-Paradigma stellt sich als eine praktikable Alternative heraus: Der Browser ist nur das Frontend für die umfangreicheren Verarbeitungs- und Speicheraufgaben, die auf dem Server eines anderen Benutzers ausgeführt werden.
+Two popular web-based Javascript libraries were tested for displaying geographic data; Leaflet and Mapbox GL. A simple test case comprised of MATSim simulation outputs was developed, with the goal of displaying aggregated roadway link volumes by time of day.
 
-# 5. Plattformarchitektur
+Leaflet is very popular and its application programming interface (API) is a bit simpler than that of Mapbox GL. Leaflet uses background map "tiles" at specific zoom levels, and layers data on top of those base maps. With small networks (we tested Cottbus, Germany, a small city of 100,000 inhabitants) Leaflet performed well, but medium-sized and large-sized networks with many elements visible at once suffered from noticeable performance degradation. This was problematic, as this was the simplest use-case envisioned.
 
-Die Client / Server-Architektur hängt von einer Reihe von Back-End-Diensten für die Benutzerauthentifizierung und die Dateispeicherung ab. Diese Back-End-Services werden in diesem Dokument nicht beschrieben. Es genügt zu erwähnen, dass das Frontend mit ihnen kommuniziert, um festzustellen, auf welche Ressourcen ein Benutzer Zugriff hat, und eine API zum Abfragen und Abrufen dieser Dateien und Ressourcen bereitstellt.
+Mapbox GL fared much better, apparently better-suited to displaying large datasets with many visible features simultaneously. In addition, Mapbox GL's use of 3D vector graphic mapping instead of preset tiles made for a much more pleasing user experience, with smooth animations between zoom levels and better background processing during page loads. For these reasons, Mapbox GL was chosen as the base map for the remaining geographic visualizations.
 
-Die Front-End-Architektur besteht aus mehreren interagierenden Komponenten:
+## Visualizing non-geographic data
 
-## "Vue" Einzelseitenanwendung
+There are literally dozens of data visualization libraries available for the web which provide ways to produce charts and plots of varying complexity. Our requirement of using open-source code narrows the field considerably.
 
-Das zur Erstellung der Anwendung verwendete primäre Framework wird als "Vue JS" (Vue) bezeichnet. Vue ist ein Framework zum Erstellen interaktiver Benutzeroberflächen im Web und hängt von HTML5, CSS 3 und Javascript ab. Vue bietet viele Dienste, mit denen sich eine Webseite mehr wie eine voll funktionsfähige Anwendung verhalten kann, einschließlich Statusverwaltung, Routing zwischen verschiedenen URLs und Codierung von Code auf eine Weise, die die Wiederverwendung und lockere Kopplung fördert.
+After experimenting with several packages including D3, Raphael, Morris and others, the package Vega-Lite (Satyanarayan, 2016) exhibited many of the characteristics desired. Notably, Vega-lite follows a "grammar of graphics" declarative syntax, as popularized by Wilkinson (2005), and this grammar allows concise description of the meaningful components of a graphic.
 
-Vue-Komponenten umfassen jeweils drei Elemente, die für das moderne Web erforderlich sind: das HTML-Layout, der JavaScript-Code und die CSS-Formatierung. Komponenten interagieren nur über genau definierte Pfade von Eigenschaften und Ereignissen miteinander, wodurch die Fehlersuche verbessert wird.
+## Dealing with large datasets
 
-## System erstellen
+MATSim network files are usually small enough to fit in RAM, but MATSim plan files and event files can be much larger than RAM, necessitating careful consideration about how to handle them.
 
-Das Build-System einer modernen Webanwendung ist ziemlich komplex und das Javascript-Ökosystem ändert sich schnell. Nach zahlreichen Iterationen umfasst das aktuelle Build-System eine Reihe einzelner Tools, die alle zusammenarbeiten, um die endgültigen Elemente zu erstellen, die an den Browser eines Benutzers gesendet werden. Zu diesen Tools gehören die Vue-Befehlszeilenschnittstelle (CLI), der NPM-Paketmanager, Webpack, Babel und TypeScript.
+Modern browsers allow access via API to a data storage area that is unique per hostname, i.e. http://mysite.com is allowed some storage on the local machine. Each browser vendor implements this differently, with strict limits on the absolute amount of data as well as on the percentage of free space on the user's machine. It became apparent that this local browser-based storage would not be sufficient for MATSim outputs. A client-server paradigm emerges as a viable alternative, and indeed this is how most websites operate: the browser is just the front-end to the heavier processing and storage tasks that happen on someone else's server.
 
-## Visualisierungs-Plug-Ins
+A companion paper from J. Laudan (citation pending) is being submitted simultaneously, that describes the server component developed for handling large MATSim outputs. The front-end developed for this research uses the same back-end server as described in that paper.
 
-Eine der Hauptanforderungen dieser Forschung besteht darin, ein System zu erstellen, mit dem neue Visualisierungen schnell erstellt und in das vorhandene Framework aufgenommen werden können, um neue Fähigkeiten zu generieren.
+# 5. Platform architecture
 
-Die Vue-Komponentenarchitektur ermöglicht dies. Um eine neue Visualisierung zu erstellen, kopiert ein Entwickler eine vorhandene "leere" Visualisierungsvorlage, gibt einen neuen Namen, gibt die erforderlichen Dateieingaben und -parameter an und verwendet dann die oben beschriebenen Bibliotheken, um den Code entsprechend ihren Anforderungen zu ändern.
+The client/server architecture depends on a set of back-end services for user authentication and file storage. Those back-end services are not described in this paper; suffice it to mention that the front-end communicates with them to establish what resources a user has access to, and provides an API with which to query and fetch those files and resources.
 
-Dies erfordert derzeit umfangreiche Programmierkenntnisse in Javascript. Es ist kein System, das mit einem Mausklick wie ein Online-Datenerkennungswerkzeug funktioniert.
+The front-end architecture has several interacting components:
 
-4874/5000
-Character limit: 5000
+## "Vue" Single Page Application
 
-# 6. Ergebnisse: Der aktuelle Status des Tools
+The primary framework used to build the application is known as "Vue JS" (Vue). Vue is a framework for building interactive user interfaces on the web, and it depends on HTML5, CSS 3, and Javascript. Vue provides many services which allow a web page to behave more like a full-featured application, including state management, routing between different URLs, and componentization of code in a way that encourages reuse and loose coupling.
 
-Eine Arbeitsinstanz der Plattform ist jetzt online und unter https://viz.vsp.tu-berlin.de verfügbar. Beispieldatensätze werden hochgeladen, und vorgefertigte Visualisierungen sind öffentlich zugänglich, um den aktuellen Status der Plattform zu demonstrieren. Es gibt auch ein Benutzeranmeldesystem, mit dem Forscher das System erweitern und experimentieren können, ohne dass Daten oder teilweise abgeschlossene Arbeiten der Öffentlichkeit zugänglich gemacht werden.
+Vue components each encapsulate three elements required for the modern web: the HTML layout, the javascript code, and the CSS formatting. Components only interact with each other through well-defined pathways of properties and events, improving debuggability.
 
-Grundlegende Benutzer-, Projekt- und Dateiverwaltungsfunktionen sind betriebsbereit. Dies beinhaltet das Gruppieren von Dateien nach Modelllauf oder nach anderen benutzerdefinierten Tags.
+## Build system
 
-Derzeit sind verschiedene Arten von Aggregatvisualisierungen in Betrieb:
+The build system of a modern web application is fairly complex and the Javascript ecosystem changes rapidly. After numerous iterations, the current build system comprises a series of individual tools that all work together to produce the final assets that get sent to a user's browser. Those tools include the Vue command line interface (CLI), the NPM package manager, webpack, babel, and TypeScript.
 
-- Ursprungs- / Zielflüsse zwischen aggregierten Gebieten
-- Link fließt nach Tageszeit
-- Transit Supply Explorer, in dem alle Transitstrecken angezeigt werden und der Benutzer sehen kann, welche Routen bestimmte Haltestellen und Links bedienen.
-- Sankey-Diagramme, die verwendet werden können, um Änderungen / Flüsse zwischen Szenarien über mehrere Auswahlmöglichkeiten hinweg darzustellen, z. B. Moduswechsel zwischen zwei Szenarien
-- Emissionsniveaus auf geografischer Netzbasis
+## Visualization plug-ins
 
-Zusätzlich ist eine disaggregierte Visualisierung verfügbar:
+One of the main requirements of this research is to produce a system where new visualizations can be produced rapidly and dropped into the existing framework to generate new capabilities.
 
-- Eine Fahrzeugflusssimulation, die die einzelnen Fahrzeugagenten in Echtzeit im Netzwerk darstellt. Die Details dieser Visualisierung werden in der Begleitarbeit von J. Laudan (Zitat ausstehend) beschrieben.
+The Vue component architecture enables this. To create a new visualization, a developer copies an existing "blank" visualization template and gives it a new name, specifies the file inputs and parameters required, and then uses the above-described libraries to modify the code per their needs.
 
-In den folgenden Abbildungen in _Abbildung 1_ finden Sie Beispiele für den aktuellen Status der Benutzeroberfläche.
+This currently requires ample coding skill in Javascript; it is not a system that is point-and-click like an online data exploration tool.
 
-! [Beispielvisualisierungen, 1a - 1f](all-figures.png)
+# 6. Results: the current state of the tool
 
-## Leistung
+A working instance of the platform is now online and available at https://viz.vsp.tu-berlin.de. Sample datasets are uploaded, and pre-built visualizations are publicly accessible, as a demonstration of the platform's current state. There is also a user login system so that researchers can extend and experiment with the system without exposing data or partially completed work to the public.
 
-Selbst mit moderner Hardware und den neuesten Browsern ist es schwierig, mit disaggregierten MATSim-Daten performante, visuell ansprechende Ergebnisse zu erzielen. Die Fahrzeugflusssimulation hängt stark vom Back-End-Server ab, um in Echtzeit Simulations- "Frames" für den Browser zu erstellen und zu liefern, sodass der Browser die Daten lediglich rendern muss.
+Basic user, project, and file management capabilities are operational. This includes grouping files by model run or by other user-defined tags.
 
-Verschiedene Aggregationsebenen erleichtern die Visualisierung von MATsim-Daten. Dies zeigt sich in der Vielzahl der Visualisierungen, die diese Forschung mit aggregierten Daten erstellen konnte.
+Several types of aggregate visualizations are currently operational:
 
-Auf dieser Grundlage müssen noch weitere Anstrengungen unternommen werden, um die jetzt verfügbaren Back-End-Serverfunktionen zu nutzen.
+- Origin/destination flows between aggregate areas
+- Link flows by time of day
+- Transit supply explorer, which displays all transit routes and allows the user to see which routes serve specific stops and links.
+- Sankey diagrams, which can be used to depict changes/flows between between scenarios across multiple choices, such as shifts in mode between two scenarios
+- Emissions levels on a geographic grid basis
 
-# 7. Schlussfolgerungen und Ausblick
+In addition, one disaggregate visualization is available:
 
-Mit den verschiedenen Technologien zu experimentieren und die verschiedenen Teile zusammenzubringen war eine enorme Aufgabe, die viel länger als erwartet dauerte. Diese Entscheidungen liegen jedoch jetzt hinter uns und die Plattform ist ziemlich stabil geworden.
+- A vehicle flow simulation, showing individual vehicle agents in real-time on the network. The details of this visualization are described in the companion paper by J. Laudan (citation pending).
 
-In wenigen Tagen können die Forscher nun eine neue Visualisierung erstellen. Zwar sind die Forscher mit den inneren Abläufen des Systems bestens vertraut, aber es war trotzdem ermutigend, neue Visualisierungen in so kurzer Zeit von der Idee zum groben Entwurf zu bringen.
+See the following screenshots in _Figure 1_ for examples of the current state of the user interface.
 
-Keine der oben aufgelisteten Visualisierungen ist besonders bahnbrechend oder optisch atemberaubend. Alle können leicht in anderen Tools erstellt werden. Dies ist zwar etwas enttäuschend, aber die Offenheit der Plattform, die keine Software-Installation durch Endbenutzer erfordert, bietet immer noch einen Vorteil: Sie öffnet die Anzeige der MATSim-Ergebnisse für die Öffentlichkeit und für Entscheidungsträger, auch wenn sie keinen Zugriff darauf haben Desktop-Mapping- oder Reise-Prognosesoftware.
+![Sample visualizations, 1a - 1f](all-figures.png)
 
-Bemerkenswert ist auch, dass die Welt während der Entwicklung dieser Plattform nicht stillgestanden hat. Erst im vergangenen Jahr wurden bedeutende Datenvisualisierungsbemühungen von gut finanzierten Unternehmen wie Uber und anderen veröffentlicht. Es gibt berechtigte Fragen, inwieweit diese Arbeit von großen, gut finanzierten, professionellen Coding-Teams abgelöst werden könnte.
+## Performance
 
-Trotz dieser Bedenken ist das MATSim-Visualisierungs-Framework einsatzbereit und wird gerade erst für die Forscher seiner Abteilung nützlich. Dies ist ein gutes Zeichen für die weitere Entwicklung in naher Zukunft.
+Even with modern hardware and the latest browsers, it is quite challenging to produce performant, visually pleasing results with disaggregate MATSim data. The vehicle flow simulation depends heavily on the back-end server to produce and deliver simulation "frames" to the browser in real-time, so that the browser simply has to render the data.
 
-Der gesamte Code ist auf der Website von MATSim Github unter https://github.com/matsim-org/viz verfügbar.
+Various levels of aggregation make MATsim data much easier to visualize, as is reflected in the sheer number of visualizations this research was able to produce with aggregate data.
+
+Based on this, further work needs to be done to leverage the back-end server capabilities we now have available.
+
+# 7. Conclusions and outlook
+
+Experimenting with the various technologies and getting all of the disparate pieces working together was an enormous task, one which took much longer than anticipated. However, those decisions are now behind us and the platform has become quite stable.
+
+A new visualization can now be generated by the researchers in a matter of days. The researchers are admittedly very familiar with the inner workings of the system, but even so it has been encouraging to see new visualizations go from ideation to rough draft in such a short time.
+
+None of the above-listed visualizations are particularly groundbreaking or visually stunning. All of them could be easily created in other tools. This is a bit disappointing but the open nature of the platform, requiring no software installation by end-users, still has an advantage: it opens up the display of MATSim results to the public and to decisionmakers, even if they do not have access to desktop mapping or travel forecasting software.
+
+Also of note is that the world has not stood still while this platform was under development. Just in the past year, major data visualization efforts from well-funded companies such as Uber and others have been released. There are legitimate questions about how much of this work could be superceded by large, well-funded, professional coding teams.
+
+Despite these concerns, the MATSim visualization framework is operational and is now just beginning to be useful for researchers at the department of its creation. This bodes well for further development in the near future.
+
+All code is available on the MATSim Github site, at https://github.com/matsim-org/viz.
+
+# References
+
+GNU General Public License (June 29, 2007). Version 3. Free Software Foundation. URL: https://www.gnu.org/licenses/gpl.html
+
+Horni, A., Nagel, K. and Axhausen, K.W. (eds.) 2016 The Multi-Agent Transport Simulation MATSim. London: Ubiquity Press. DOI: http://dx.doi.org/10.5334/baw. License: CC-BY 4.0
+
+Rieser, Marcel (2016): Senozon Via. In Andreas Horni, Kai Nagel, Kay W. Axhausen (Eds.): The Multi-Agent Transport Simulation MATSim: Ubiquity Press, pp. 219–224.
+
+Satyanarayan, A., Moritz, D., Wongsuphasawat, K., and Heer, J. (2016): Vega-Lite: A Grammar of Interactive Graphics. IEEE Transactions on Visualization and Computer Graphics, Volume 23, Issue 1. DOI: https://doi.org/10.1109/TVCG.2016.2599030
+
+Strippgen, David (2016): OTFVis: MATSim’s Open-Source Visualizer. In Andreas Horni, Kai Nagel, Kay W. Axhausen (Eds.): The Multi-Agent Transport Simulation MATSim: Ubiquity Press, pp. 225–234.
+
+Wilkinson, Leland (2005): The Grammar of Graphics, Second Edition. Springer Press, Chicago, USA. DOI: https://doi.org/10.1007/0-387-28695-0
