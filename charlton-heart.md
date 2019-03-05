@@ -1,7 +1,6 @@
 ---
 title: A web-based data visualization platform for MATSim
-author: |
-  \textbf{William Charlton}, Technische Universität Berlin, Germany
+author: \textbf{William Charlton}, Technische Universität Berlin, Germany
 abstract: There are many tools available for analyzing MATSim results, both open-source and commercial. This research builds a new visualization platform for MATSim outputs that is entirely web-based. After initial experiments with many different web technologies, a client/server platform design emerges which leverages advanced user interface capabilities of modern browsers on the front-end, and relies on back-end server processing for more CPU-intensive tasks. The initial platform is now operational and includes several aggregate-level visualizations including origin/destination flows, transit supply, and emissions levels; as well as one fully disaggregate traffic visualization. These visualizations are general enough to be useful for various projects. Further work is needed to make the visualizations more compelling and the platform more useful for practitioners.
 ---
 
