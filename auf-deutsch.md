@@ -11,9 +11,9 @@ Derzeit gibt es keine webbasierten, interaktiven Tools zur Verbreitung von MATSi
 
 Unsere Forschung versucht, diese Lücke zu schließen, indem eine offene webbasierte Visualisierungsanwendung geschaffen wird, die speziell für MATSim entwickelt ist.
 
-## Anforderung
+## Anforderungen
 
-Das Forschungsteam der TU Berlin hat mehrere offene ergebnisoffene Diskussionsrunden abgehalten, bevor Code geschrieben wurde. Die folgenden Anforderungen sind aus diesen Diskussionen herausgekommen.
+Das Forschungsteam der TU Berlin hat mehrere ergebnisoffene Diskussionsrunden abgehalten, bevor Code geschrieben wurde. Die folgenden Anforderungen sind aus diesen Diskussionen herausgekommen.
 
 - **Anforderung 1: Moderne webbrowser-basierte Bedienung.** Verschiedene neue Webtechnologien ermöglichen diese Untersuchung, z.b. HTML 5, CSS 3, WebGL, ECMAScript 6 und "Web Workers". Leider aktualisieren Endbenutzer\*Innen ihre Browser nicht häufig. Dies schafft eine "long-tailed" Technologie Anpassungs. Wir haben uns für die neuesten Web-Technologien entschieden, mit der Erwartung, dass diese in Zukunft weiter verbreitet werden.
 - **Anforderung 2: Open Source.** Das gesamte Projekt ist vollständig Open Source und unter der GNU General Public License v3 lizenziert.
@@ -63,3 +63,4 @@ Die Welt der Datenvisualisierung steht nicht still. Vor kurzem wurden wichtige D
 Trotz dieser Bedenken ist die MATSim Visualisierungsanwendung einsatzbereit. Dies ist ein gutes Vorzeichen für die weitere Entwicklung.
 
 Der gesamte Code ist unter https://github.com/matsim-org/viz verfügbar.
+n
